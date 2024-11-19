@@ -125,4 +125,4 @@ def segment():
     return jsonify({'mask': pred_mask})  # Renvoie le masque sous forme JSON
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=0000, debug=True)
