@@ -7,9 +7,9 @@ import torchvision.transforms as transforms
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
+import os
 
 app = Flask(__name__)
-
 
 class ConvBlock(nn.Module):
     """Apply convolution, batch normalization, and ReLU twice."""
@@ -94,8 +94,9 @@ class Unet(nn.Module):
 
 # Charger le modèle de segmentation
 number_of_classes = 8
+model_path = "models/Unet_categorie_sans_augmentation.pth"
 model = Unet(3, number_of_classes)
-model.load_state_dict(torch.load("Unet_categorie_sans_augmentation.pth", map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 model.eval()
 
 # Définir les transformations
@@ -110,11 +111,8 @@ def segment_image(image):
     input_tensor = transform(image).unsqueeze(0)  # Ajouter la dimension batch
     with torch.no_grad():
         pred_mask = model(input_tensor)
-    # Choisir la classe la plus probable
     pred_mask = torch.argmax(pred_mask, dim=1).squeeze(0).cpu().numpy()
-    # Convertir en binaire (0 ou 1) pour simplifier l'image du masque
     pred_mask_binary = (pred_mask > 0).astype(np.uint8)
-    
     return pred_mask_binary.tolist()  # Conversion en liste JSON-compatible
 
 @app.route('/segment', methods=['POST'])
@@ -125,4 +123,5 @@ def segment():
     return jsonify({'mask': pred_mask})  # Renvoie le masque sous forme JSON
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
