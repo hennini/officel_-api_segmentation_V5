@@ -10,6 +10,7 @@ import torch.nn.functional as F
 
 app = Flask(__name__)
 
+
 class ConvBlock(nn.Module):
     """Apply convolution, batch normalization, and ReLU twice."""
     def __init__(self, in_channels, out_channels, mid_channels=None):
