@@ -115,7 +115,7 @@ def segment_image(image):
     pred_mask_binary = (pred_mask > 0).astype(np.uint8)
     return pred_mask_binary.tolist()  # Conversion en liste JSON-compatible
 
-@app.route('/segment', methods=['POST'])
+@app.route('/', methods=['POST'])
 def segment():
     file = request.files['image']
     img = Image.open(io.BytesIO(file.read()))
